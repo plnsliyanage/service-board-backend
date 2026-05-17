@@ -11,16 +11,39 @@ dotenv.config();
 const app = express();
 
 /* ======================
+   ALLOWED FRONTEND DOMAINS
+====================== */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://service-board-frontend-one.vercel.app",
+];
+
+/* ======================
    MIDDLEWARE
 ====================== */
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
+
+/* ======================
+   TEST ROUTE (IMPORTANT)
+====================== */
+app.get("/", (req, res) => {
+  res.json({
+    message: "Service Board Backend is running 🚀",
+  });
+});
 
 /* ======================
    ROUTES
 ====================== */
-app.use("/api/auth", authRoutes);   // 🔐 JWT AUTH (login)
-app.use("/api/jobs", jobRoutes);    // 📌 protected + public job APIs
+app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobRoutes);
 
 /* ======================
    404 HANDLER
@@ -46,10 +69,10 @@ app.use((err, req, res, next) => {
 connectDB();
 
 /* ======================
-   START SERVER
+   START SERVER (RAILWAY FIX)
 ====================== */
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
