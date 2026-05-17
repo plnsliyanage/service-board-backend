@@ -5,29 +5,34 @@ import User from "../models/User.js";
 const router = express.Router();
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-  if (!user || user.password !== password) {
-    return res.status(401).json({ message: "Invalid credentials" });
-  }
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
 
-  // 🔐 FIXED: SAME SECRET USED EVERYWHERE
-  const token = jwt.sign(
-    {
-      id: user._id,
-      email: user.email,
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,   // ✅ FIXED
+      { expiresIn: "1h" }
+    );
+
+    return res.json({
+      token,
       role: user.role,
-    },
-    "SECRET_KEY",
-    { expiresIn: "1h" }
-  );
+    });
 
-  res.json({
-    token,
-    role: user.role,
-  });
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
 });
 
 export default router;
