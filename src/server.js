@@ -10,9 +10,9 @@ dotenv.config();
 
 const app = express();
 
-/* ======================
-   ALLOWED FRONTEND DOMAINS
-====================== */
+
+   //ALLOWED FRONTEND DOMAINS
+
 const allowedOrigins = [
   "http://localhost:3000",
   "https://service-board-frontend-one.vercel.app",
